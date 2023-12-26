@@ -1,9 +1,15 @@
+import * as React from "react";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import "./App.css";
 
+import CircularProgress from "@mui/material/CircularProgress";
+import LinearProgress from "@mui/material/LinearProgress";
+import Box from "@mui/material/Box";
+
 function App() {
   const [showData, setShowData] = useState([]);
+  const [status, setStatus] = useState("");
 
   useEffect(() => {
     getData();
@@ -11,10 +17,12 @@ function App() {
 
   const getData = async () => {
     try {
+      setStatus("Loading...");
       const result = await axios.get("http://localhost:4001/products");
-      console.log(result);
       setShowData(result.data.data);
+      setStatus("Delete");
     } catch (error) {
+      setStatus("Fetching Error...");
       console.log("Error retrieving data:", error);
     }
   };
@@ -57,9 +65,14 @@ function App() {
             </div>
           </div>
         ))
-      ) : (
-        <p>Loading data...</p>
-      )}
+      ) : status === "Fetching Error..." ? (
+        <p>{status}</p>
+      )  : status === "Loading..." ? (
+        <Box sx={{ width: "100%" }}>
+          <LinearProgress />
+        </Box>
+      ) :  showData.length === 0 ? (
+        "Not A data."):""}
     </div>
   );
 }
